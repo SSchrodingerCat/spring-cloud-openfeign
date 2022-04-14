@@ -76,6 +76,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import static org.springframework.cloud.openfeign.security.OAuth2FeignRequestInterceptorBuilder.buildWithConfigurers;
 
 /**
@@ -247,8 +249,7 @@ public class FeignAutoConfiguration {
 		}
 
 		@Bean("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")
-		@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager")
-		public CloseableHttpClient httpClient(ApacheHttpClientFactory httpClientFactory,
+		public CloseableHttpClient httpClient(@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager") ApacheHttpClientFactory httpClientFactory,
 				HttpClientConnectionManager httpClientConnectionManager,
 				FeignHttpClientProperties httpClientProperties) {
 			RequestConfig defaultRequestConfig = RequestConfig.custom()
@@ -260,9 +261,8 @@ public class FeignAutoConfiguration {
 		}
 
 		@Bean
-		@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")
 		@ConditionalOnMissingBean(Client.class)
-		public Client feignClient(HttpClient httpClient) {
+		public Client feignClient(@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient") HttpClient httpClient) {
 			return new ApacheHttpClient(httpClient);
 		}
 
