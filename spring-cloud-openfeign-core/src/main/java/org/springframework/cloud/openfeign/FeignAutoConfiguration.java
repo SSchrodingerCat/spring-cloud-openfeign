@@ -90,6 +90,7 @@ import static org.springframework.cloud.openfeign.security.OAuth2FeignRequestInt
  * @author Kwangyong Kim
  * @author Sam Kruglov
  * @author Wojciech Mąka
+ * @author SSchrodingerCat
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Feign.class)
@@ -215,7 +216,6 @@ public class FeignAutoConfiguration {
 	// for load-balanced clients.
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ApacheHttpClient.class)
-	@ConditionalOnMissingBean(CloseableHttpClient.class)
 	@ConditionalOnProperty(value = "spring.cloud.openfeign.httpclient.enabled", matchIfMissing = true)
 	@Conditional(HttpClient5DisabledConditions.class)
 	protected static class HttpClientFeignConfiguration {
@@ -228,7 +228,7 @@ public class FeignAutoConfiguration {
 
 		private CloseableHttpClient httpClient;
 
-		@Bean
+		@Bean("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager")
 		@ConditionalOnMissingBean(HttpClientConnectionManager.class)
 		public HttpClientConnectionManager connectionManager(
 				ApacheHttpClientConnectionManagerFactory connectionManagerFactory,
@@ -246,7 +246,8 @@ public class FeignAutoConfiguration {
 			return connectionManager;
 		}
 
-		@Bean
+		@Bean("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")
+		@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager")
 		public CloseableHttpClient httpClient(ApacheHttpClientFactory httpClientFactory,
 				HttpClientConnectionManager httpClientConnectionManager,
 				FeignHttpClientProperties httpClientProperties) {
@@ -259,6 +260,7 @@ public class FeignAutoConfiguration {
 		}
 
 		@Bean
+		@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")
 		@ConditionalOnMissingBean(Client.class)
 		public Client feignClient(HttpClient httpClient) {
 			return new ApacheHttpClient(httpClient);
