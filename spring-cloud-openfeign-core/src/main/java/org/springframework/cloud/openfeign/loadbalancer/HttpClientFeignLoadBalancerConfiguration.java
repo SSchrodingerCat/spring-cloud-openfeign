@@ -56,7 +56,8 @@ class HttpClientFeignLoadBalancerConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@Conditional(OnRetryNotEnabledCondition.class)
-	public Client feignClient(LoadBalancerClient loadBalancerClient, HttpClient httpClient,
+	public Client feignClient(LoadBalancerClient loadBalancerClient,
+							  @Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient") HttpClient httpClient,
 			LoadBalancerClientFactory loadBalancerClientFactory) {
 		ApacheHttpClient delegate = new ApacheHttpClient(httpClient);
 		return new FeignBlockingLoadBalancerClient(delegate, loadBalancerClient, loadBalancerClientFactory);
@@ -68,7 +69,8 @@ class HttpClientFeignLoadBalancerConfiguration {
 	@ConditionalOnBean(LoadBalancedRetryFactory.class)
 	@ConditionalOnProperty(value = "spring.cloud.loadbalancer.retry.enabled", havingValue = "true",
 			matchIfMissing = true)
-	public Client feignRetryClient(LoadBalancerClient loadBalancerClient, HttpClient httpClient,
+	public Client feignRetryClient(LoadBalancerClient loadBalancerClient,
+								   @Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")HttpClient httpClient,
 			LoadBalancedRetryFactory loadBalancedRetryFactory, LoadBalancerClientFactory loadBalancerClientFactory) {
 		ApacheHttpClient delegate = new ApacheHttpClient(httpClient);
 		return new RetryableFeignBlockingLoadBalancerClient(delegate, loadBalancerClient, loadBalancedRetryFactory,

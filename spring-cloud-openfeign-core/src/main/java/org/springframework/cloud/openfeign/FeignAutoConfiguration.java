@@ -249,8 +249,8 @@ public class FeignAutoConfiguration {
 		}
 
 		@Bean("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.httpClient")
-		public CloseableHttpClient httpClient(@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager") ApacheHttpClientFactory httpClientFactory,
-				HttpClientConnectionManager httpClientConnectionManager,
+		public CloseableHttpClient httpClient(ApacheHttpClientFactory httpClientFactory,
+				@Qualifier("org.springframework.cloud.openfeign.HttpClientFeignConfiguration.connectionManager") HttpClientConnectionManager httpClientConnectionManager,
 				FeignHttpClientProperties httpClientProperties) {
 			RequestConfig defaultRequestConfig = RequestConfig.custom()
 					.setConnectTimeout(httpClientProperties.getConnectionTimeout())
